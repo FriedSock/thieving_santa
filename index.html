@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="bootstrap.js" type="text/javascript" charset="utf-8"></script>
+    <link rel='stylesheet' href="bootstrap.css" type="text/css" charset="utf-8">
+    <title>STEAL STUFF</title>
+  </head>
+  <body>
+
+    <div id="player_select" style="display: none;" class="jquery-modal blocker current">
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="padding-top: 15%" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title" id="myModalLabel">Enter player name</h4>
+            </div>
+            <div class="modal-body">
+               <input type="text" class="form-control" id="usr">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary">Start Game</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="your_turn" style="display: none;">
+    </div>
+
+    <div id="main_grid" style="display: none;">
+    </div>
+
+    <script>
+      $(document).ready(function(){
+
+        var change_hash = (function () {
+          var shown_element = "";
+          var thing = 0;
+
+          return function (e) {
+            var to_hide = $(shown_element);
+            shown_element = location.hash;
+            var to_show = $(shown_element);
+            to_hide.hide();
+            to_show.show();
+            if(location.hash == '#player_select') {
+              $('#myModal').modal('show');
+            }
+        }}) ();
+
+        $(window).bind("hashchange", change_hash);
+
+        if (window.location.hash !== '') {
+          $(window).trigger('hashchange');
+          } else {
+          window.location.hash = 'player_select'
+        }
+      });
+    </script>
+  </body>
+</html>
