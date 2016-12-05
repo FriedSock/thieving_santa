@@ -3,6 +3,9 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="bootstrap.js" type="text/javascript" charset="utf-8"></script>
+    <script src="player.js" type="text/javascript" charset="utf-8"></script>
+    <script src="player_select.js" type="text/javascript" charset="utf-8"></script>
+    <script src="your_turn.js" type="text/javascript" charset="utf-8"></script>
     <link rel='stylesheet' href="bootstrap.css" type="text/css" charset="utf-8">
     <title>STEAL STUFF</title>
   </head>
@@ -63,152 +66,27 @@
     <script>
       $(document).ready(function(){
 
-        var Players = (function (my) {
-          my.players = [];
-          my.current_player = null;
-
-          my.add_player = (function () {
-
-            var table_content = function(player_name) {
-              return "<tr><th scope='row'>" + player_name + "</th><td>Present button or name of present</td></tr>";
-            };
-
-            var create_player = (function ()  {
-              var name_to_object = function(player_name) {
-                return { name: player_name, had_a_go: false};
-              }
-
-              return function() {
-                name = $('#player_name_input').val();
-                my.players.push(name_to_object(name));
-              }
-            }) ();
-
-            var clear_input = function() {
-              $('#player_name_input').val('');
-            }
-
-            var render_player_on_table = (function() {
-              return (function() {
-                var table_id = (function() {
-                  var initial_table_number = 1;
-
-                  return function() {
-                    initial_table_number = ~initial_table_number;
-                    return "#player_table_" + Math.abs(initial_table_number);
-                  }
-                }) ();
-
-                return function() {
-                  $(table_id()).append(table_content(name));
-                }
-              }) ();
-            }) ();
-
-            return function(e) {
-              create_player();
-              clear_input();
-              render_player_on_table();
-            };
-          }) ();
-
-          my.set_current_player = function(player) {
-            player.had_a_go = true;
-            my.current_player = player
-          };
-
-          my.choose_new_player = (function() {
-            var _players_still_to_go = function() {
-              return my.players.filter(function(player) {
-                return !player.had_a_go;
-              });
-            }
-
-            return function () {
-              var players_still_to_go = _players_still_to_go();
-              var random_index = Math.floor(Math.random() * players_still_to_go.length)
-
-              player = players_still_to_go[random_index];
-              my.set_current_player(player);
-            }
-          }) ();
-
-          $('#player_name_input').bind("enterKey", my.add_player);
-          $('#player_name_input').keyup(function(e){
-            if(e.keyCode == 13)
-            {
-              $(this).trigger("enterKey");
-            }
-          });
-
-          return my
-        }) (Players || {});
-
         var change_hash = (function (Players) {
           var shown_element = "";
           var thing = 0;
 
-          var sample_data = [
-          "Charlie",
-          "Neil",
-          "Jack",
-          "Claire",
-          "Ben",
-          "Richard",
-          "Steve",
-          "Boris",
-          "Tom S",
-          "Tom G",
-          "Chris",
-          "Crystal",
-          "Anissa",
-          "Sarah",
-          "Andrew",
-          "Tim",
-          "Steve",
-          "Elanor",
-          "Paula",
-          "Bob",
-          "Donald",
-          "Helen",
-          "Henry"
-          ]
-
           return function (e) {
             var to_hide = $(shown_element);
             if(shown_element == "#player_select") {
-              $('#myModal').modal('hide');
+              PlayerSelect.hide();
             }
+
             shown_element = location.hash;
             var to_show = $(shown_element);
+
             to_hide.hide();
             to_show.show();
 
             if(location.hash == '#player_select') {
-              $('#myModal').modal('show');
-              for (var i = 0; i < sample_data.length; i++) {
-                name = $('#player_name_input').val(sample_data[i]);
-                Players.add_player();
-              }
+              PlayerSelect.show();
             }
         }}) (Players);
 
-        var set_your_turn_display = (function (Players) {
-          return function() {
-            var text = Players.current_player.name + ", it is your turn to play!"
-            $('#your_turn_display').html(text)
-            window.location.hash = 'your_turn'
-          }
-        }) (Players);
-
-        var start_next_turn = (function (Players) {
-          return function () {
-            Players.choose_new_player();
-            set_your_turn_display();
-          }
-        }) (Players);
-
-        $('#start_game_button').on('click', start_next_turn)
 
         $(window).bind("hashchange", change_hash);
 
@@ -216,6 +94,36 @@
           $(window).trigger('hashchange');
           } else {
           window.location.hash = 'player_select'
+        }
+
+        var sample_data = [
+        "Charlie",
+        "Neil",
+        "Jack",
+        "Claire",
+        "Ben",
+        "Richard",
+        "Steve",
+        "Boris",
+        "Tom S",
+        "Tom G",
+        "Chris",
+        "Crystal",
+        "Anissa",
+        "Sarah",
+        "Andrew",
+        "Tim",
+        "Steve",
+        "Elanor",
+        "Paula",
+        "Bob",
+        "Donald",
+        "Helen",
+        "Henry"
+        ]
+        for (var i = 0; i < sample_data.length; i++) {
+          name = $('#player_name_input').val(sample_data[i]);
+          Players.add_player();
         }
 
       });
