@@ -22,7 +22,7 @@
                <input type="text" class="form-control" id="player_name_input">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary">Start Game</button>
+              <button type="button" class="btn btn-primary" id="start_game_button">Start Game</button>
             </div>
           </div>
         </div>
@@ -52,6 +52,9 @@
     </div>
 
     <div id="your_turn" style="display: none;">
+      <div id="your_turn_display" style="margin-top: 15%; text-align: center; font-size: 50pt">
+        Jeff it is your turn!
+      <div>
     </div>
 
     <div id="main_grid" style="display: none;">
@@ -61,21 +64,23 @@
       $(document).ready(function(){
 
         var Players = (function (my) {
-          my.players = {};
+          my.players = [];
+          my.current_player = null;
 
           my.add_player = (function () {
 
             var table_content = function(player_name) {
-              return "<tr><th scope='row'>" + player_name + "</th><td>Present button</td></tr>";
+              return "<tr><th scope='row'>" + player_name + "</th><td>Present button or name of present</td></tr>";
             };
 
-            var create_player = (function (player_name)  {
+            var create_player = (function ()  {
               var name_to_object = function(player_name) {
+                return { name: player_name, had_a_go: false};
               }
 
-              return function(player_name) {
+              return function() {
                 name = $('#player_name_input').val();
-                my.players[name] = name_to_object(player_name);
+                my.players.push(name_to_object(name));
               }
             }) ();
 
@@ -107,7 +112,28 @@
             };
           }) ();
 
-          $('#player_name_input').bind("enterKey",my.add_player);
+          my.set_current_player = function(player) {
+            player.had_a_go = true;
+            my.current_player = player
+          };
+
+          my.choose_new_player = (function() {
+            var _players_still_to_go = function() {
+              return my.players.filter(function(player) {
+                return !player.had_a_go;
+              });
+            }
+
+            return function () {
+              var players_still_to_go = _players_still_to_go();
+              var random_index = Math.floor(Math.random() * players_still_to_go.length)
+
+              player = players_still_to_go[random_index];
+              my.set_current_player(player);
+            }
+          }) ();
+
+          $('#player_name_input').bind("enterKey", my.add_player);
           $('#player_name_input').keyup(function(e){
             if(e.keyCode == 13)
             {
@@ -150,6 +176,9 @@
 
           return function (e) {
             var to_hide = $(shown_element);
+            if(shown_element == "#player_select") {
+              $('#myModal').modal('hide');
+            }
             shown_element = location.hash;
             var to_show = $(shown_element);
             to_hide.hide();
@@ -163,6 +192,23 @@
               }
             }
         }}) (Players);
+
+        var set_your_turn_display = (function (Players) {
+          return function() {
+            var text = Players.current_player.name + ", it is your turn to play!"
+            $('#your_turn_display').html(text)
+            window.location.hash = 'your_turn'
+          }
+        }) (Players);
+
+        var start_next_turn = (function (Players) {
+          return function () {
+            Players.choose_new_player();
+            set_your_turn_display();
+          }
+        }) (Players);
+
+        $('#start_game_button').on('click', start_next_turn)
 
         $(window).bind("hashchange", change_hash);
 
