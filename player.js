@@ -6,7 +6,7 @@ var Players = (function (my) {
   my.add_player = (function () {
 
     var table_content = function(player_name) {
-      return "<tr><th scope='row'>" + player_name + "</th><td>Present button or name of present</td></tr>";
+      return "<tr><th scope='row'>" + player_name + "</th><td id=\"present_" + player_name + "\"></td></tr>";
     };
 
     var create_player = (function ()  {
