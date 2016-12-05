@@ -2,11 +2,13 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="bootstrap.js" type="text/javascript" charset="utf-8"></script>
     <script src="player.js" type="text/javascript" charset="utf-8"></script>
     <script src="player_select.js" type="text/javascript" charset="utf-8"></script>
+    <script src="present.js" type="text/javascript" charset="utf-8"></script>
     <script src="your_turn.js" type="text/javascript" charset="utf-8"></script>
-    <link rel='stylesheet' href="bootstrap.css" type="text/css" charset="utf-8">
     <title>STEAL STUFF</title>
   </head>
   <body style="padding-left: 20px; padding-right: 20px;">
@@ -31,6 +33,22 @@
         </div>
       </div>
 
+      <div class="modal fade" id="presentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="padding-top: 15%" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title" id="myModalLabel">Enter present description</h4>
+            </div>
+            <div class="modal-body">
+               <input type="text" class="form-control" id="present_name_input">
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style="margin-left: 10%; margin-right: 10%; text-align: center;">
         <table class="table table-striped table-inverse" style="max-width: 40%; display: inline-block; vertical-align: top">
           <thead>
@@ -50,8 +68,6 @@
           </tbody>
         </table>
       </div>
-
-
     </div>
 
     <div id="your_turn" style="display: none;">
@@ -86,7 +102,6 @@
               PlayerSelect.show();
             }
         }}) (Players);
-
 
         $(window).bind("hashchange", change_hash);
 
@@ -126,6 +141,18 @@
           Players.add_player();
         }
 
+        $('div[id^="open_present_"]').click(function() {
+          $(this).attr('data-current-player', 'true');
+          Present.show_modal();
+        });
+
+        $('#present_name_input').bind('enterKey', Present.add_present());
+        $('#present_name_input').keyup(function(e){
+          if(e.keyCode == 13)
+          {
+            $(this).trigger("enterKey");
+          }
+        });
       });
     </script>
   </body>

@@ -6,7 +6,9 @@ var Players = (function (my) {
   my.add_player = (function () {
 
     var table_content = function(player_name) {
-      return "<tr><th scope='row'>" + player_name + "</th><td id=\"present_" + player_name + "\"></td></tr>";
+      var add_button_id = "open_present_" + player_name;
+
+      return "<tr><th scope='row'>" + player_name + "</th><td id=\"present_" + player_name + "\"><div id='" + add_button_id + "' class='glyphicon glyphicon-plus'></div></td></tr>";
     };
 
     var create_player = (function ()  {
@@ -36,7 +38,15 @@ var Players = (function (my) {
         }) ();
 
         return function() {
-          $(table_id()).append(table_content(name));
+          var table_element = $(table_content(name));
+
+          table_element.droppable({
+            drop: function( event, ui ) {
+              $(this).addClass("ui-state-highlight")
+            }
+          });
+
+          $(table_id()).append(table_element);
         }
       }) ();
     }) ();
