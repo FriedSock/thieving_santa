@@ -6,7 +6,7 @@
     <link rel='stylesheet' href="bootstrap.css" type="text/css" charset="utf-8">
     <title>STEAL STUFF</title>
   </head>
-  <body>
+  <body style="padding-left: 20px; padding-right: 20px;">
 
     <div id="player_select" style="display: none;" class="jquery-modal blocker current">
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -19,7 +19,7 @@
               <h4 class="modal-title" id="myModalLabel">Enter player name</h4>
             </div>
             <div class="modal-body">
-               <input type="text" class="form-control" id="usr">
+               <input type="text" class="form-control" id="player_name_input">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary">Start Game</button>
@@ -27,6 +27,28 @@
           </div>
         </div>
       </div>
+
+      <div style="margin-left: 10%; margin-right: 10%; text-align: center;">
+        <table class="table table-striped table-inverse" style="max-width: 40%; display: inline-block; vertical-align: top">
+          <thead>
+            <tr>
+            </tr>
+          </thead>
+          <tbody id="player_table_1">
+          </tbody>
+        </table>
+
+        <table class="table table-striped table-inverse" style="max-width: 40%; display: inline-block; vertical-align: top">
+          <thead>
+            <tr>
+            </tr>
+          </thead>
+          <tbody id="player_table_2">
+          </tbody>
+        </table>
+      </div>
+
+
     </div>
 
     <div id="your_turn" style="display: none;">
@@ -38,9 +60,93 @@
     <script>
       $(document).ready(function(){
 
-        var change_hash = (function () {
+        var Players = (function (my) {
+          my.players = {};
+
+          my.add_player = (function () {
+
+            var table_content = function(player_name) {
+              return "<tr><th scope='row'>" + player_name + "</th><td>Present button</td></tr>";
+            };
+
+            var create_player = (function (player_name)  {
+              var name_to_object = function(player_name) {
+              }
+
+              return function(player_name) {
+                name = $('#player_name_input').val();
+                my.players[name] = name_to_object(player_name);
+              }
+            }) ();
+
+            var clear_input = function() {
+              $('#player_name_input').val('');
+            }
+
+            var render_player_on_table = (function() {
+              return (function() {
+                var table_id = (function() {
+                  var initial_table_number = 1;
+
+                  return function() {
+                    initial_table_number = ~initial_table_number;
+                    return "#player_table_" + Math.abs(initial_table_number);
+                  }
+                }) ();
+
+                return function() {
+                  $(table_id()).append(table_content(name));
+                }
+              }) ();
+            }) ();
+
+            return function(e) {
+              create_player();
+              clear_input();
+              render_player_on_table();
+            };
+          }) ();
+
+          $('#player_name_input').bind("enterKey",my.add_player);
+          $('#player_name_input').keyup(function(e){
+            if(e.keyCode == 13)
+            {
+              $(this).trigger("enterKey");
+            }
+          });
+
+          return my
+        }) (Players || {});
+
+        var change_hash = (function (Players) {
           var shown_element = "";
           var thing = 0;
+
+          var sample_data = [
+          "Charlie",
+          "Neil",
+          "Jack",
+          "Claire",
+          "Ben",
+          "Richard",
+          "Steve",
+          "Boris",
+          "Tom S",
+          "Tom G",
+          "Chris",
+          "Crystal",
+          "Anissa",
+          "Sarah",
+          "Andrew",
+          "Tim",
+          "Steve",
+          "Elanor",
+          "Paula",
+          "Bob",
+          "Donald",
+          "Helen",
+          "Henry"
+          ]
 
           return function (e) {
             var to_hide = $(shown_element);
@@ -48,10 +154,15 @@
             var to_show = $(shown_element);
             to_hide.hide();
             to_show.show();
+
             if(location.hash == '#player_select') {
               $('#myModal').modal('show');
+              for (var i = 0; i < sample_data.length; i++) {
+                name = $('#player_name_input').val(sample_data[i]);
+                Players.add_player();
+              }
             }
-        }}) ();
+        }}) (Players);
 
         $(window).bind("hashchange", change_hash);
 
@@ -60,6 +171,7 @@
           } else {
           window.location.hash = 'player_select'
         }
+
       });
     </script>
   </body>
